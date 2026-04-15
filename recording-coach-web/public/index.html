@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>录视频引导提问</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <h1 class="title">录视频引导提问</h1>
+        <p class="hint">
+          按主题预生成问题，或开着麦克风根据你正在讲的内容实时追问；服务端会默认联网检索摘要，让问题更具体（可在 .env 关闭）。
+        </p>
+      </header>
+
+      <nav class="tabs" role="tablist">
+        <button type="button" class="tab active" id="tabTopic" role="tab" aria-selected="true">按主题生成</button>
+        <button type="button" class="tab" id="tabLive" role="tab" aria-selected="false">实时听我说</button>
+      </nav>
+
+      <section class="panel" id="panelTopic" role="tabpanel">
+        <label class="label" for="topic">本期主题</label>
+        <textarea
+          id="topic"
+          class="topic"
+          rows="3"
+          placeholder="例如：这期想讲讲我为什么从大厂出来做独立产品"
+          maxlength="2000"
+        ></textarea>
+        <div class="row">
+          <button type="button" class="btn primary" id="btnGenerate">生成问题</button>
+          <span class="status" id="status" aria-live="polite"></span>
+        </div>
+      </section>
+
+      <section class="panel hidden" id="panelLive" role="tabpanel">
+        <p class="live-intro">
+          使用麦克风，经本机服务转发到<strong>七牛实时语音识别</strong>；再根据识别文字调用大模型生成追问。需要
+          <code>.env</code> 里已配置 <code>QINIU_AI_API_KEY</code>（与 LLM 同一套 Key 即可）。
+        </p>
+        <label class="label" for="liveTopicHint">可选：整期主题提示（帮助模型理解背景）</label>
+        <textarea
+          id="liveTopicHint"
+          class="topic"
+          rows="2"
+          placeholder="可不填；填了会一并送给模型"
+          maxlength="500"
+        ></textarea>
+        <div class="row">
+          <button type="button" class="btn primary" id="btnLiveStart">开始听</button>
+          <button type="button" class="btn" id="btnLiveStop" disabled>停止</button>
+          <span class="status" id="liveStatus" aria-live="polite"></span>
+        </div>
+        <div class="row">
+          <label class="inline-check">
+            <input type="checkbox" id="liveAuto" checked />
+            约每 20 秒自动根据当前转录更新问题
+          </label>
+        </div>
+        <div class="row">
+          <button type="button" class="btn" id="btnLiveRefresh">立即根据转录更新问题</button>
+        </div>
+        <label class="label">实时转录</label>
+        <div id="liveTranscript" class="live-transcript" aria-live="polite"></div>
+      </section>
+
+      <p class="keys">
+        展示问题时快捷键：<kbd>空格</kbd> 下一条 · <kbd>Shift</kbd>+<kbd>空格</kbd> 上一条 · <kbd>F</kbd> 全屏 ·
+        <kbd>Esc</kbd> 退出全屏
+      </p>
+
+      <section class="stage hidden" id="stage" aria-live="polite">
+        <div class="counter" id="counter"></div>
+        <p class="question" id="question"></p>
+        <div class="stage-actions">
+          <button type="button" class="btn" id="btnPrev">上一条</button>
+          <button type="button" class="btn" id="btnNext">下一条</button>
+          <button type="button" class="btn ghost" id="btnBack">返回</button>
+        </div>
+      </section>
+    </div>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

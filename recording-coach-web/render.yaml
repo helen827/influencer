@@ -1,0 +1,14 @@
+# Render Blueprint：https://render.com/docs/blueprint-spec
+# 仓库根目录须为本项目（或见 README 在控制台改 Root Directory）
+services:
+  - type: web
+    name: recording-coach-web
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
