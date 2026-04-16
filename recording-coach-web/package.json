@@ -10,15 +10,21 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "ios:add": "cap add ios",
+    "ios:sync": "cap sync ios",
+    "ios:open": "cap open ios"
   },
   "dependencies": {
+    "@capacitor/core": "^6.2.0",
+    "@capacitor/ios": "^6.2.0",
     "dotenv": "^16.4.5",
     "duckduckgo-search": "^1.0.7",
     "express": "^4.21.2",
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^6.2.0",
     "@types/express": "^4.17.21",
     "@types/node": "^22.13.10",
     "@types/ws": "^8.5.13",

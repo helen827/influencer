@@ -147,3 +147,47 @@ docker run --rm -p 3847:3847 \
 - `public/`：单页 HTML / CSS / JS。
 - `Dockerfile`、`.dockerignore`：容器镜像构建。
 - `render.yaml`：Render Blueprint（Web Service + 健康检查路径）。
+- `capacitor.config.ts`、`ios/`：用 **Capacitor** 打包成 **iPhone/iPad App**（内嵌你已部署的 https 站点）。
+
+## 苹果 iOS App（Capacitor）
+
+思路：App 里是一个 **WKWebView**，打开你部署在 Render 上的 **同一套网页**（含实时听写、WebSocket）。密钥仍在服务端，**不要**写进 App。
+
+### 你需要准备
+
+1. **Mac + Xcode**（App Store 安装完整 Xcode）。  
+2. **Apple Developer Program**（年费，上架 App Store 需要）。  
+3. 已在公网部署好的 **https 地址**（例如 Render 的 `https://xxx.onrender.com`）。
+
+### 操作步骤
+
+1. **改线上地址**  
+   打开 [`capacitor.config.ts`](recording-coach-web/capacitor.config.ts)，把默认的 `https://YOUR-SUBDOMAIN.onrender.com` 换成你的真实域名；或在终端临时指定：  
+   `CAP_SERVER_URL=https://你的域名.onrender.com npx cap sync ios`
+
+2. **安装 CocoaPods**（若尚未安装）  
+   ```bash
+   sudo gem install cocoapods
+   ```
+
+3. **在项目根目录执行**（`/Users/jiayinghe/Documents/cursor/recording-coach-web`）  
+   ```bash
+   npm install
+   npx cap sync ios
+   cd ios/App && pod install && cd ../..
+   npm run ios:open
+   ```
+   最后一步会打开 **Xcode**。
+
+4. **Xcode 里**  
+   - 左侧选中 **App** 工程 → **Signing & Capabilities** → 选你的 **Team**，Bundle Identifier 可改成全球唯一（如 `com.你的名字.recordingcoach`）。  
+   - 选真机或模拟器，点 **Run** 试跑。首次使用「实时听我说」时系统会弹出麦克风授权（文案已在 `Info.plist` 里配置）。
+
+5. **上架 App Store（简略）**  
+   - Xcode 菜单 **Product → Archive**，经 **Organizer** 上传到 **App Store Connect**。  
+   - 在 App Store Connect 填描述、截图、隐私（说明会用到麦克风与网络）。  
+   - 纯网页壳应用有时会被 **4.2 最低功能** 质疑，建议在审核备注里写清：本 App 为录视频辅助工具，含麦克风实时听写与引导提问等；必要时可增加原生启动图、错误页等以体现「不仅是浏览器」。
+
+### 若只要 Mac 电脑上用
+
+可不打包 iOS：继续用 **Safari 打开你的 https 站点**，或菜单「开发」→ 固定到程序坞；若需要独立 `.app`，可考虑 **Electron**（与现有 MeetingPilot 技术栈接近），那是另一条路线。
