@@ -1,0 +1,11 @@
+.DS_Store
+node_modules/
+.next/
+out/
+dist/
+coverage/
+__pycache__/
+*.pyc
+*.log
+2023-card-*.jpg
+test-cover*.jpg
